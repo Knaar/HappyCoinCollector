@@ -18,7 +18,7 @@ public:
 	AMyPlayerController();
 	virtual void SetupInputComponent()override;
 	UPROPERTY()
-	class ABasePlayer* BasePlayer;
+	class ABasePlayer* PlayerPawn;
 
 	virtual void SetPawn(APawn* InPawn) override;
 
@@ -27,4 +27,7 @@ public:
 
 	UFUNCTION()
 	void MoveRight(float Value);
+
+	UFUNCTION()
+	void Jump();
 };

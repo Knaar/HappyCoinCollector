@@ -16,7 +16,7 @@ public:
 	ABasePlayer();
 
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Components")
-	class UStaticMeshComponent *Mesh;
+	class UStaticMeshComponent *BaseMesh;
 	
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Components")
 	class USpringArmComponent *SpringArm;

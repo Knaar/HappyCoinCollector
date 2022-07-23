@@ -7,19 +7,19 @@
 ABasePlayer::ABasePlayer()
 {
 	PrimaryActorTick.bCanEverTick = true;
-	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
-	RootComponent = Mesh;
-	Mesh->SetSimulatePhysics(false);
+	BaseMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
+	RootComponent = BaseMesh;
+	BaseMesh->SetSimulatePhysics(false);
 	
 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
-	SpringArm->SetupAttachment(Mesh);
+	SpringArm->SetupAttachment(BaseMesh);
 
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComponent"));
 	CameraComponent->SetupAttachment(SpringArm);
 
 	AudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("Audio Component"));
-	AudioComponent->SetupAttachment(Mesh);
+	AudioComponent->SetupAttachment(BaseMesh);
 	AudioComponent->SetAutoActivate(true);
 }
 
@@ -37,10 +37,7 @@ void ABasePlayer::Tick(float DeltaTime)
 
 void ABasePlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-	InputComponent->BindAxis("MoveUp", this, &ABasePlayer::MoveUp);
-	InputComponent->BindAxis("MoveRight", this, &ABasePlayer::MoveRight);
-	InputComponent->BindAction("Jump", EInputEvent::IE_Pressed, this, &ABasePlayer::Jump);
+	
 
 	OnActorBeginOverlap.AddDynamic(this, &ABasePlayer::OnOverlappedByWater);
 	SpawnInTheBegin();
@@ -53,20 +50,31 @@ void ABasePlayer::SpawnInTheBegin()
 
 void ABasePlayer::MoveUp(float Value)
 {
-	FVector ForceVector = FVector(1, 0, 0) * MovementForce * Value;
-	Mesh->AddForce(ForceVector);
+	if (BaseMesh) {
+		FVector ForceVector = FVector(1, 0, 0) * MovementForce * Value;
+		BaseMesh->AddForce(ForceVector);
+
+	}
+	
 }
 
 void ABasePlayer::MoveRight(float Value)
 {
-	FVector ForceVector = FVector(0, 1, 0) * MovementForce * Value;
-	Mesh->AddForce(ForceVector);
+	if (BaseMesh)
+	{
+		FVector ForceVector = FVector(0, 1, 0) * MovementForce * Value;
+		BaseMesh->AddForce(ForceVector);
+	}
+	
 }
 
 void ABasePlayer::Jump()
 {
-	FVector JumpVector = FVector(0, 0, 1) * JumpImpulse;
-	Mesh->AddImpulse(JumpVector);
+	if (BaseMesh)
+	{
+		FVector JumpVector = FVector(0, 0, 1) * JumpImpulse;
+		BaseMesh->AddImpulse(JumpVector);
+	}
 }
 
 void ABasePlayer::OnOverlappedByWater(AActor* OvelappedActor, AActor* OtherActor)
