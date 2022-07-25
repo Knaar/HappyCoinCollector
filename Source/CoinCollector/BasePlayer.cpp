@@ -45,6 +45,7 @@ void ABasePlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 void ABasePlayer::SpawnInTheBegin()
 {
+//GetWorld()->SpawnActor(this);
 	SetActorLocation(FVector(650, -2610, 352));
 }
 

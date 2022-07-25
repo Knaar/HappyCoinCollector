@@ -37,5 +37,5 @@ protected:
 	UFUNCTION()
 	void OnOverlap(AActor*ExitBoxActor,AActor*OtherActor);
 
-	void NewGame();
+	//void NewGame();
 };
