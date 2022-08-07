@@ -23,7 +23,10 @@ void AMyPlayerController::SetPawn(APawn* InPawn)
 {
 	Super::SetPawn(InPawn);
 	PlayerPawn=Cast<ABasePlayer>(InPawn);
+	
 }
+
+
 
 void AMyPlayerController::MoveUp(float Value)
 {

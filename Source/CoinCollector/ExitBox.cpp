@@ -39,7 +39,7 @@ void AExitBox::OnOverlap(AActor* ExitBoxActor, AActor* OtherActor)
 	if ((PlayerPawn->Score) >= 1) {
 		AudioComponent->Play();
 		PlayerPawn->Score=0;
-		GetWorld()->GetTimerManager().SetTimer(TimerHamdle,this, &AExitBox::NewGame, 5, false, 5);
+		GetWorld()->GetTimerManager().SetTimer(TimerHamdle,this, &AExitBox::NewGame, 5, false, 7);
 	}
 	
 	

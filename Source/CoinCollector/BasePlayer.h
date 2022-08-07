@@ -5,7 +5,10 @@
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+#include "HealthComponent.h"
 #include "BasePlayer.generated.h"
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FPlayerGameOver,APawn*,Actor);
 
 UCLASS()
 class COINCOLLECTOR_API ABasePlayer : public APawn
@@ -27,13 +30,19 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Component")
 	class UAudioComponent* AudioComponent;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Component")
+	class UAudioComponent* AudioComponentMainGameplay;
+
 	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="Components")
 	float MovementForce=100000;
 
 	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Components")
 	int32 Score=0;
 	
-
+	class UHealthComponent*HealthComponent;
+	
+	UPROPERTY(BlueprintAssignable)
+	FPlayerGameOver OnPlayerGameOver;
 
 protected:
 	virtual void BeginPlay() override;
@@ -44,6 +53,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	void SpawnInTheBegin();
+	void SpawnDaisabledPhysics();
 	UFUNCTION()
 	void MoveUp(float Value);
 	UFUNCTION()

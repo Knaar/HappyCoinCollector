@@ -3,14 +3,17 @@
 #include "BasePlayer.h"
 #include "SeaWater.h"
 #include "Components/AudioComponent.h"
+#include "HealthComponent.h"
+#include "Components/ForceFeedbackComponent.h"
 
 ABasePlayer::ABasePlayer()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	BaseMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	RootComponent = BaseMesh;
-	BaseMesh->SetSimulatePhysics(false);
+	BaseMesh->SetSimulatePhysics(true);
 	
+
 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArm->SetupAttachment(BaseMesh);
@@ -20,24 +23,30 @@ ABasePlayer::ABasePlayer()
 
 	AudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("Audio Component"));
 	AudioComponent->SetupAttachment(BaseMesh);
-	AudioComponent->SetAutoActivate(true);
+	AudioComponent->SetAutoActivate(false);
+
+	AudioComponentMainGameplay = CreateDefaultSubobject<UAudioComponent>(TEXT("Audio Component Main Component"));
+	AudioComponentMainGameplay->SetupAttachment(BaseMesh);
+	AudioComponentMainGameplay->SetAutoActivate(false);
+
+	HealthComponent = CreateDefaultSubobject<UHealthComponent>("HealthComponent");
 }
 
 void ABasePlayer::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 }
 
 void ABasePlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	UE_LOG(LogTemp,Warning,TEXT("Score %d"),Score);
+	UE_LOG(LogTemp, Warning, TEXT("Score %d"), Score);
 }
 
 void ABasePlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
-	
+
 
 	OnActorBeginOverlap.AddDynamic(this, &ABasePlayer::OnOverlappedByWater);
 	SpawnInTheBegin();
@@ -45,7 +54,12 @@ void ABasePlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 void ABasePlayer::SpawnInTheBegin()
 {
-//GetWorld()->SpawnActor(this);
+	BaseMesh->CreatePhysicsState(true);
+	SetActorLocation(FVector(650, -2610, 352));
+}
+
+void ABasePlayer::SpawnDaisabledPhysics()
+{
 	SetActorLocation(FVector(650, -2610, 352));
 }
 
@@ -56,7 +70,7 @@ void ABasePlayer::MoveUp(float Value)
 		BaseMesh->AddForce(ForceVector);
 
 	}
-	
+
 }
 
 void ABasePlayer::MoveRight(float Value)
@@ -66,7 +80,7 @@ void ABasePlayer::MoveRight(float Value)
 		FVector ForceVector = FVector(0, 1, 0) * MovementForce * Value;
 		BaseMesh->AddForce(ForceVector);
 	}
-	
+
 }
 
 void ABasePlayer::Jump()
@@ -80,10 +94,22 @@ void ABasePlayer::Jump()
 
 void ABasePlayer::OnOverlappedByWater(AActor* OvelappedActor, AActor* OtherActor)
 {
-	if (Cast<ASeaWater>(OtherActor)!=nullptr)
+	if (Cast<ASeaWater>(OtherActor) != nullptr)
 	{
-		SpawnInTheBegin();
-		
+		BaseMesh->DestroyPhysicsState();
+
+		HealthComponent->HeathDecrement();
+		if (HealthComponent->GetHealth() > 0)
+		{
+			SpawnInTheBegin();
+		}		
+		else {
+			//SpawnInTheBegin();
+			//BaseMesh->Deactivate();
+			BaseMesh->DestroyPhysicsState();
+			OnPlayerGameOver.Broadcast(this);
+		}
+
 	}
 }
 
